@@ -1,0 +1,22 @@
+Minimum share: 1.0  -- ----  Maximum share:690400.0
+Mean share: 3364.26438594  -- ----  Standard Deviation share:10742.7151128
+Percentage of instances presented in the above graph: 1.0
+Percentage of instances presented in the above graph: 0.9147406589941668
+Percentage of instances selected by share threshold 7000: 0.9147406589941668
+Total shares summed up by share threshold 7000: summed up 52779948.0/total shares 106697645.0= 0.49466834999
+Lambda: 1000
+Alpha: 0.001
+Time (in seconds): 132.097637
+Final Cost Function: 908012.9016621307
+Final Cost Function for Squared Thetas: 830382.8252222404
+Final Cost Function for Cubic Thetas: 799009.7189973503
+Validation set..................20.0 % of data set
+Absolute value of Average Error from the Gradient Descendent Linear thetas: 534.0066931765805
+Absolute value of Average Error from the Gradient Descendent WITH squared thetas: 525.7921658862938
+Absolute value of Average Error from the Gradient Descendent WITH cubic thetas: 528.7102457614346
+Valores de erro obtidos no TESTING:---------------------
+Absolute value of Average Error from the Gradient Descendent Linear thetas: 2603.1737895916376
+Absolute value of Average Error from the Gradient Descendent WITH squared thetas: 2574.9456481009775
+Absolute value of Average Error from the Gradient Descendent WITH cubic thetas: 2572.50830027406
+VALIDATION:Absolute value of Average Error from Normal Equations: 5169.670483724249
+TESTING:Absolute value of Average Error from Normal Equations: 2089181.2097146746

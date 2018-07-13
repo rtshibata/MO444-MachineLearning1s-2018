@@ -22,32 +22,42 @@ data_matrix.insert(0, "x0", 1)
 #Column index of the target value
 n=col_target = 59
 #Number of instances
-m=31715
+m_total=31715
 
 numpy_data = data_matrix.as_matrix()
 y = numpy_data[:,col_target]
-y = y.reshape(m,1)
+y = y.reshape(m_total,1)
 #Drops the target values column from training data
 numpy_data = np.delete(numpy_data, [col_target], axis=1)
 
 #Plot graph
 print("Minimum share: {}  -- ----  Maximum share:{}".format(y.min(),y.max()))
+print("Mean share: {}  -- ----  Standard Deviation share:{}".format(np.mean(y),np.std(y)))
+
 '''
-k, bins, patches = plt.hist(y, bins = 10, range = (-1,y.max()))
+k, bins, patches = plt.hist(y, bins = 100, range = (-1,y.max()))
 plt.xlabel('Shares bin(target)', fontsize=15)
 plt.ylabel('Number of URLs(instances) per bin', fontsize=15)
 
 plt.show()
-print("Percentage of instances presented in the above graph: " + repr( float(k.sum())/float(m)))
+print("Percentage of instances presented in the above graph: " + repr( float(k.sum())/float(m_total)))
 '''
+k, bins, patches = plt.hist(y, bins = 10, range = (-1,7000))
+plt.xlabel('Shares bin(target)', fontsize=15)
+plt.ylabel('Number of URLs(instances) per bin', fontsize=15)
+
+plt.show()
+print("Percentage of instances presented in the above graph: " + repr( float(k.sum())/float(m_total)))
+
+
 
 
 #Use only representative instances, shares above a threshold value
-threshold = 100000
+threshold = 7000
 outliers_index = np.argwhere(y > threshold)
 outliers_index = np.delete(outliers_index, [1], axis=1)
 selected_inst= len(y) - len(outliers_index)
-print("Percentage of instances selected by share threshold {}: ".format(threshold) + repr( float(selected_inst)/float(m)))
+print("Percentage of instances selected by share threshold {}: ".format(threshold) + repr( float(selected_inst)/float(m_total)))
 summed_shares = y[y<=threshold].sum()
 
 print("Total shares summed up by share threshold {}: summed up {}/total shares {}= {}".format(threshold,summed_shares,y.sum(),float(summed_shares)/float(y.sum())))
@@ -56,6 +66,7 @@ print("Total shares summed up by share threshold {}: summed up {}/total shares {
 #Get rid of non-representative instances   
 y = np.delete(y, outliers_index, axis = 0)
 numpy_data = np.delete(numpy_data, outliers_index, axis=0)
+m=len(y)
 
 ############################
 #Scaling: Mean Normalization
@@ -97,7 +108,7 @@ y_val=y[m_train:]
 ################################################################## 
 #Linear Regression:Cost function computation and Gradient Descent with regularization
 ##################################################################
-alpha = 0.0001
+alpha = 0.001
 
 Lambda = 1000
 
@@ -221,7 +232,7 @@ print("Final Cost Function for Cubic Thetas: " + str((J_history_3[iterations-1,0
 
 iterations_vector = np.array(range(0,iterations))
 
-plt.figure(figsize=(3.5, 3.5), dpi=100)
+plt.figure(figsize=(2.5, 2.5), dpi=100)
 plt.scatter(iterations_vector, J_history, s = 20)
 plt.scatter(iterations_vector, J_history_2, s = 20)
 plt.scatter(iterations_vector, J_history_3, s = 20)
@@ -307,6 +318,7 @@ for i in list_to_normalize:
 test_results = pd.read_csv(test_target)
 numpy_results = test_results.as_matrix()
 
+
 #Evaluating predictions for the testing set
 predictions_for_test = test_data.dot(thetas)
 
@@ -318,6 +330,14 @@ cubic_x = np.power(test_data[:,1:n],3)
 test_data_3 = np.concatenate((test_data_2,cubic_x) ,axis=1)
 predictions_for_test_3 = test_data_3.dot(thetas_3)
 
+#Calculating error without Outliers in the Testing set
+outliers_results = np.argwhere(numpy_results > 10000)
+outliers_results = np.delete(outliers_results, [1], axis=1)
+noOutlier_results = np.delete(numpy_results, outliers_results, axis = 0)
+predictions_for_test_masked = np.delete(predictions_for_test, outliers_results, axis = 0)
+predictions_for_test_masked_2 = np.delete(predictions_for_test_2, outliers_results, axis = 0)
+predictions_for_test_masked_3 = np.delete(predictions_for_test_3, outliers_results, axis = 0)
+
 '''
 print("Valores Thetas obtidos:")
 print("thetas para hipotese linear:{}".format(thetas))
@@ -327,27 +347,36 @@ print("-------------------------------")
 print("thetas para hipotese cubico:{}".format(thetas_3))
 print("-------------------------------")
 '''
+
 m_test = numpy_results.size
+m_noOutlier = noOutlier_results.size
 
 #Evaluating the error in predictions
-error = predictions_for_test - numpy_results
-error_2= predictions_for_test_2 - numpy_results
-error_3= predictions_for_test_3 - numpy_results
+error = np.absolute(predictions_for_test - numpy_results)
+error_2= np.absolute(predictions_for_test_2 - numpy_results)
+error_3= np.absolute(predictions_for_test_3 - numpy_results)
 
+noOutliers_error = np.absolute(predictions_for_test_masked - noOutlier_results)
+noOutliers_error_2 = np.absolute(predictions_for_test_masked_2 - noOutlier_results)
+noOutliers_error_3 = np.absolute(predictions_for_test_masked_3 - noOutlier_results)
 
-error = np.absolute(error)
-error_2 = np.absolute(error_2)
-error_3 = np.absolute(error_3)
-
-#Evaluating MSE
+#Evaluating ABSOLUTE MEAN ERROR
 avg_error=  float(error.sum())/float(m_test)
 avg_error_2=  float(error_2.sum())/float(m_test)
 avg_error_3=  float(error_3.sum())/float(m_test)
+
+noOutliers_avg_err=float(noOutliers_error.sum())/float(m_noOutlier)
+noOutliers_avg_err_2=float(noOutliers_error_2.sum())/float(m_noOutlier)
+noOutliers_avg_err_3=float(noOutliers_error_3.sum())/float(m_noOutlier)
 
 print("Valores de erro obtidos no TESTING:---------------------")
 print("Absolute value of Average Error from the Gradient Descendent Linear thetas: " + repr(avg_error))
 print("Absolute value of Average Error from the Gradient Descendent WITH squared thetas: " + repr(avg_error_2))
 print("Absolute value of Average Error from the Gradient Descendent WITH cubic thetas: " + repr(avg_error_3))
+print("Excluding Outliers, instancias com Shares > 10000 no TESTING:---------------------")
+print("Absolute value of Average Error from the Gradient Descendent Linear thetas: " + repr(noOutliers_avg_err))
+print("Absolute value of Average Error from the Gradient Descendent WITH squared thetas: " + repr(noOutliers_avg_err_2))
+print("Absolute value of Average Error from the Gradient Descendent WITH cubic thetas: " + repr(noOutliers_avg_err_3))
 
 #####################
 #Calculating the parameters using Normal Equations
@@ -363,7 +392,6 @@ val_err_ne = np.absolute(val_err_ne)
 
 avg_val_err_ne=  float(val_err_ne.sum())/float(m_val)
 print("VALIDATION:Absolute value of Average Error from Normal Equations: " + repr(avg_val_err_ne))
-
 
 prediction_normal_eq = test_data.dot(ne_thetas)
 error_ne = prediction_normal_eq - numpy_results
