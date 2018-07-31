@@ -6,34 +6,46 @@ import sys
 class NormalEquations:
 
 	#construtor
-	def __init__(self,X,target_values):
+	def __init__(self,X,target_values,lambda_):
 		self.data = X
-
+		self.lambda_ = lambda_
 		self.target_values = target_values
 		self.theta = pd.DataFrame() #empty
 		
 	def begin_alg(self):
-
 		y = self.target_values
+		m,n = self.data.shape
 
-		X = self.data
-		m,n = X.shape
-
+		# Normal Equation with regularization:
+		# theta = inv(X^T * X + lambda_I) * X^T * y
 		theta = []
-		#print X
-	
-		#print y
-		# Normal Equation:
-		# theta = inv(X^T * X) * X^T * y
 
-		# For convenience I create a new, tranposed X matrix
-		X_transpose = X.transpose()
+		# 		I = |0 ....  0|  --> theta0 is not regularized
+		#		    |. 1 ... 0|
+		#			|. . 1 ...|
+		#			|.  ...  0| 
+		#			|0 ... 0 1|
+
+		#n and not (n+1) for theta0 is already being counted
+		identity_neq = np.identity(n) 
+		identity_neq[0,0] = 0
+		identity_neq = self.lambda_ * identity_neq
+		lambda_I = pd.DataFrame(data=identity_neq)
+
+		#print(lambda_I)
 
 		# Calculating theta
-		XtX = X_transpose.dot(X)
+		X_transpose = self.data.transpose()
+		#print(X_transpose.shape)
+		XtX = X_transpose.dot(self.data)
+		#print(XtX.shape)
+		theta = XtX + lambda_I
+		#print(theta.shape)
 		try:
-			theta = np.linalg.inv(XtX)
+			theta = np.linalg.inv(theta)
+			#print(theta.shape)
 			theta = theta.dot(X_transpose)
+			#print(theta.shape)
 			theta = theta.dot(y)
 			self.theta = theta
 		except np.linalg.LinAlgError as err:

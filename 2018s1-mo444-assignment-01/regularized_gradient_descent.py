@@ -19,6 +19,7 @@ data_matrix.drop(data_matrix.columns[[0 , 1]], axis=1, inplace = True)
 #Insert bias equals to 1
 data_matrix.insert(0, "x0", 1)
 
+
 #Column index of the target value
 n=col_target = 59
 #Number of instances

@@ -3,11 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import normal_equations
+import getopt
 
 path_2_csv_ic ="/home/ec2010/ra082674/mo444/assign2/1/train.csv"
-train_csv = "~/Renato/Github/MachineLearning/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/train.csv"
-test_csv = "~/Renato/Github/MachineLearning/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test.csv"
-test_target =  "~/Renato/Github/MachineLearning/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test_target.csv"
+train_csv = "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/train.csv"
+test_csv = "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test.csv"
+test_target =  "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test_target.csv"
 
 #Reads data
 #data_matrix = pd.read_csv(path_2_csv_ic)
@@ -19,6 +20,7 @@ data_matrix.drop(data_matrix.columns[[0 , 1]], axis=1, inplace = True)
 #Insert bias equals to 1
 data_matrix.insert(0, "x0", 1)
 
+#1 bias + 58 features + 1 target 
 #Column index of the target value
 n=col_target = 59
 #Number of instances
@@ -34,23 +36,19 @@ numpy_data = np.delete(numpy_data, [col_target], axis=1)
 print("Minimum share: {}  -- ----  Maximum share:{}".format(y.min(),y.max()))
 print("Mean share: {}  -- ----  Standard Deviation share:{}".format(np.mean(y),np.std(y)))
 
-'''
+
 k, bins, patches = plt.hist(y, bins = 100, range = (-1,y.max()))
 plt.xlabel('Shares bin(target)', fontsize=15)
 plt.ylabel('Number of URLs(instances) per bin', fontsize=15)
 
 plt.show()
 print("Percentage of instances presented in the above graph: " + repr( float(k.sum())/float(m_total)))
-'''
+
 k, bins, patches = plt.hist(y, bins = 10, range = (-1,7000))
 plt.xlabel('Shares bin(target)', fontsize=15)
 plt.ylabel('Number of URLs(instances) per bin', fontsize=15)
 
 plt.show()
-print("Percentage of instances presented in the above graph: " + repr( float(k.sum())/float(m_total)))
-
-
-
 
 #Use only representative instances, shares above a threshold value
 threshold = 7000
@@ -365,23 +363,26 @@ avg_error=  float(error.sum())/float(m_test)
 avg_error_2=  float(error_2.sum())/float(m_test)
 avg_error_3=  float(error_3.sum())/float(m_test)
 
-noOutliers_avg_err=float(noOutliers_error.sum())/float(m_noOutlier)
-noOutliers_avg_err_2=float(noOutliers_error_2.sum())/float(m_noOutlier)
-noOutliers_avg_err_3=float(noOutliers_error_3.sum())/float(m_noOutlier)
-
 print("Valores de erro obtidos no TESTING:---------------------")
 print("Absolute value of Average Error from the Gradient Descendent Linear thetas: " + repr(avg_error))
 print("Absolute value of Average Error from the Gradient Descendent WITH squared thetas: " + repr(avg_error_2))
 print("Absolute value of Average Error from the Gradient Descendent WITH cubic thetas: " + repr(avg_error_3))
+
+'''
+noOutliers_avg_err=float(noOutliers_error.sum())/float(m_noOutlier)
+noOutliers_avg_err_2=float(noOutliers_error_2.sum())/float(m_noOutlier)
+noOutliers_avg_err_3=float(noOutliers_error_3.sum())/float(m_noOutlier)
+
 print("Excluding Outliers, instancias com Shares > 10000 no TESTING:---------------------")
 print("Absolute value of Average Error from the Gradient Descendent Linear thetas: " + repr(noOutliers_avg_err))
 print("Absolute value of Average Error from the Gradient Descendent WITH squared thetas: " + repr(noOutliers_avg_err_2))
 print("Absolute value of Average Error from the Gradient Descendent WITH cubic thetas: " + repr(noOutliers_avg_err_3))
+'''
 
 #####################
 #Calculating the parameters using Normal Equations
 #####################
-normal_eq = normal_equations.NormalEquations(pd.DataFrame(data=train_data),y_train)
+normal_eq = normal_equations.NormalEquations(pd.DataFrame(data=train_data),y_train,Lambda)
 normal_eq.begin_alg()
 ne_thetas = normal_eq.get_theta()
 #print(type(ne_thetas),ne_thetas.shape)
