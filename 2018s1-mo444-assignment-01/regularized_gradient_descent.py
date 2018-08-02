@@ -5,9 +5,9 @@ import time
 import normal_equations
 
 path_2_csv_ic ="/home/ec2010/ra082674/mo444/assign2/1/train.csv"
-train_csv = "~/Renato/Github/MachineLearning/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/train.csv"
-test_csv = "~/Renato/Github/MachineLearning/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test.csv"
-test_target =  "~/Renato/Github/MachineLearning/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test_target.csv"
+train_csv = "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/train.csv"
+test_csv = "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test.csv"
+test_target =  "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test_target.csv"
 
 #Reads data
 #data_matrix = pd.read_csv(path_2_csv_ic)
@@ -33,25 +33,31 @@ numpy_data = np.delete(numpy_data, [col_target], axis=1)
 
 #Plot graph
 print("Minimum share: {}  -- ----  Maximum share:{}".format(y.min(),y.max()))
-k, bins, patches = plt.hist(y, bins = 10, range = (-1,y.max()))
+print("Mean share: {}  -- ----  Standard Deviation share:{}".format(np.mean(y),np.std(y)))
+
+
+k, bins, patches = plt.hist(y, bins = 100, range = (-1,y.max()))
 plt.xlabel('Shares bin(target)', fontsize=15)
 plt.ylabel('Number of URLs(instances) per bin', fontsize=15)
 
 plt.show()
 print("Percentage of instances presented in the above graph: " + repr( float(k.sum())/float(m)))
 
+k, bins, patches = plt.hist(y, bins = 10, range = (-1,7000))
+plt.xlabel('Shares bin(target)', fontsize=15)
+plt.ylabel('Number of URLs(instances) per bin', fontsize=15)
 
+plt.show()
 
 #Use only representative instances, shares above a threshold value
-threshold = 100000
+threshold = 7000
 outliers_index = np.argwhere(y > threshold)
 outliers_index = np.delete(outliers_index, [1], axis=1)
-selected_inst= len(y) - len(outliers_index)
-print("Percentage of instances selected by share threshold {}: ".format(threshold) + repr( float(selected_inst)/float(m)))
+m_selected_inst= len(y) - len(outliers_index)
+print("Percentage of instances selected by share threshold {}: {} ".format(threshold,float(m_selected_inst)/float(m)))
 summed_shares = y[y<=threshold].sum()
 
 print("Total shares summed up by share threshold {}: summed up {}/total shares {}= {}".format(threshold,summed_shares,y.sum(),float(summed_shares)/float(y.sum())))
-
 
 #Get rid of non-representative instances   
 y = np.delete(y, outliers_index, axis = 0)
@@ -92,7 +98,7 @@ for i in list_to_normalize:
 ##################################################################
 alpha = 0.001
 
-Lambda = 50
+Lambda = 1000
 
 iterations = 1000
 
@@ -223,6 +229,14 @@ plt.ylabel('Cost Function', fontsize=15)
 
 plt.show()
 
+print("Valores Thetas obtidos:")
+print("thetas para hipotese linear:{}".format(thetas))
+print("-------------------------------")
+print("thetas para hipotese ao quadrado:{}".format(thetas_2))
+print("-------------------------------")
+print("thetas para hipotese cubico:{}".format(thetas_3))
+print("-------------------------------")
+
 #Reading the test set and the target values for the test set
 test_matrix = pd.read_csv(test_csv)
 #Drops columns URL and timedelta 
@@ -235,27 +249,10 @@ test_data = test_matrix.as_matrix()
 ###############################################
 #Scaling of the testing set: Mean Normalization
 ###############################################
-maximum_features_test = np.zeros([1, n])
-minimum_features_test = np.zeros([1,n])
-mean_features_test = np.zeros([1,n])
-interval_features_test = np.zeros([1,n])
 
-
-for i in range(0,n):
-     maximum_features_test[0,i] = test_data[:,i].max()
-     
-for i in range(0,n):
-     minimum_features_test[0,i] = test_data[:,i].min()
-     
-for i in range(0,n):
-     mean_features_test[0,i] = test_data[:,i].mean()
-     
-for i in range(0,n):
-     interval_features_test[0,i] = maximum_features_test[0,i] -  minimum_features_test[0,i]
-
+#Using the same "mean" and "max-min" values obtained for the training data
 for i in list_to_normalize:
-     test_data[:,i] = (test_data[:,i] - mean_features_test[0,i])/(interval_features_test[0,i])
-
+     test_data[:,i] = (test_data[:,i] - mean_features[0,i])/(interval_features[0,i])
 
 #Reads testing target values
 test_results = pd.read_csv(test_target)
@@ -271,14 +268,6 @@ predictions_for_test_2 = test_data_2.dot(thetas_2)
 cubic_x = np.power(test_data[:,1:n],3)
 test_data_3 = np.concatenate((test_data_2,cubic_x) ,axis=1)
 predictions_for_test_3 = test_data_3.dot(thetas_3)
-
-print("Valores Thetas obtidos:")
-print("thetas para hipotese linear:{}".format(thetas))
-print("-------------------------------")
-print("thetas para hipotese ao quadrado:{}".format(thetas_2))
-print("-------------------------------")
-print("thetas para hipotese cubico:{}".format(thetas_3))
-print("-------------------------------")
 
 m_test = numpy_results.size
 
@@ -304,10 +293,9 @@ print("Absolute value of Average Error from the Gradient Descendent WITH cubic t
 #####################
 #Calculating the parameters using Normal Equations
 #####################
-normal_eq = normal_equations.NormalEquations(pd.DataFrame(data=train_data),y)
+normal_eq = normal_equations.NormalEquations(pd.DataFrame(data=train_data),y, Lambda)
 normal_eq.begin_alg()
 ne_thetas = normal_eq.get_theta()
-print(type(ne_thetas),ne_thetas.shape)
 
 prediction_normal_eq = test_data.dot(ne_thetas)
 error_ne = prediction_normal_eq - numpy_results

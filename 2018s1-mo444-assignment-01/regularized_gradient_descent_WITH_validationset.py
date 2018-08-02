@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import time
 import normal_equations
 import getopt
+import warnings
+
+warnings.filterwarnings("ignore")
 
 path_2_csv_ic ="/home/ec2010/ra082674/mo444/assign2/1/train.csv"
 train_csv = "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/train.csv"
@@ -54,8 +57,8 @@ plt.show()
 threshold = 7000
 outliers_index = np.argwhere(y > threshold)
 outliers_index = np.delete(outliers_index, [1], axis=1)
-selected_inst= len(y) - len(outliers_index)
-print("Percentage of instances selected by share threshold {}: ".format(threshold) + repr( float(selected_inst)/float(m_total)))
+m_selected_inst= len(y) - len(outliers_index)
+print("Percentage of instances selected by share threshold {}: {} ".format(threshold,float(m_selected_inst)/float(m_total)))
 summed_shares = y[y<=threshold].sum()
 
 print("Total shares summed up by share threshold {}: summed up {}/total shares {}= {}".format(threshold,summed_shares,y.sum(),float(summed_shares)/float(y.sum())))
@@ -106,7 +109,7 @@ y_val=y[m_train:]
 ################################################################## 
 #Linear Regression:Cost function computation and Gradient Descent with regularization
 ##################################################################
-alpha = 0.001
+alpha = 0.01
 
 Lambda = 1000
 
@@ -239,6 +242,15 @@ plt.ylabel('Cost Function', fontsize=15)
 
 plt.show()
 
+
+print("Valores Thetas obtidos:")
+print("thetas para hipotese linear:{}".format(thetas))
+print("-------------------------------")
+print("thetas para hipotese ao quadrado:{}".format(thetas_2))
+print("-------------------------------")
+print("thetas para hipotese cubico:{}".format(thetas_3))
+print("-------------------------------")
+
 ####################
 #Validation test
 ####################
@@ -290,12 +302,13 @@ test_data = test_matrix.as_matrix()
 ###############################################
 #Scaling of the testing set: Mean Normalization
 ###############################################
-maximum_features_test = np.zeros([1, n])
-minimum_features_test = np.zeros([1,n])
-mean_features_test = np.zeros([1,n])
-interval_features_test = np.zeros([1,n])
 
+#Using the same "mean" and "max-min" values obtained for the training data
+     
+for i in list_to_normalize:
+     test_data[:,i] = (test_data[:,i] - mean_features[0,i])/(interval_features[0,i])
 
+'''
 for i in range(0,n):
      maximum_features_test[0,i] = test_data[:,i].max()
      
@@ -310,7 +323,7 @@ for i in range(0,n):
 
 for i in list_to_normalize:
      test_data[:,i] = (test_data[:,i] - mean_features_test[0,i])/(interval_features_test[0,i])
-
+'''
 
 #Reads testing target values
 test_results = pd.read_csv(test_target)
@@ -354,10 +367,6 @@ error = np.absolute(predictions_for_test - numpy_results)
 error_2= np.absolute(predictions_for_test_2 - numpy_results)
 error_3= np.absolute(predictions_for_test_3 - numpy_results)
 
-noOutliers_error = np.absolute(predictions_for_test_masked - noOutlier_results)
-noOutliers_error_2 = np.absolute(predictions_for_test_masked_2 - noOutlier_results)
-noOutliers_error_3 = np.absolute(predictions_for_test_masked_3 - noOutlier_results)
-
 #Evaluating ABSOLUTE MEAN ERROR
 avg_error=  float(error.sum())/float(m_test)
 avg_error_2=  float(error_2.sum())/float(m_test)
@@ -369,6 +378,10 @@ print("Absolute value of Average Error from the Gradient Descendent WITH squared
 print("Absolute value of Average Error from the Gradient Descendent WITH cubic thetas: " + repr(avg_error_3))
 
 '''
+noOutliers_error = np.absolute(predictions_for_test_masked - noOutlier_results)
+noOutliers_error_2 = np.absolute(predictions_for_test_masked_2 - noOutlier_results)
+noOutliers_error_3 = np.absolute(predictions_for_test_masked_3 - noOutlier_results)
+
 noOutliers_avg_err=float(noOutliers_error.sum())/float(m_noOutlier)
 noOutliers_avg_err_2=float(noOutliers_error_2.sum())/float(m_noOutlier)
 noOutliers_avg_err_3=float(noOutliers_error_3.sum())/float(m_noOutlier)
