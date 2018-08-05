@@ -3,11 +3,72 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import normal_equations
+import sys
+import getopt
 
 path_2_csv_ic ="/home/ec2010/ra082674/mo444/assign2/1/train.csv"
 train_csv = "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/train.csv"
 test_csv = "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test.csv"
 test_target =  "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test_target.csv"
+
+#################################
+#Usage:
+#arguments
+# -a = --alpha = alpha
+# -l = --lambda = lambda
+# -i = --iterations =  number of iterations
+# -t = --threshold = threshold value of instances whose shares are above it are not considered for the training 
+################################
+def usage():
+	print("---------------Usage--------------------")
+	print("Pass the arguments -a -l -i -t\n(ou --alpha --lambda --iterations --threshold) followed by their respective POSITIVE NUMERIC value")
+
+def is_positive_number(x):
+	try:
+		float(x)
+	except ValueError:
+		return False
+	if float(x)>=0:
+		return True
+	else:
+		return False
+
+def get_parameters():	
+	try:
+		opts, args = getopt.getopt(sys.argv[1:],"a:l:i:t:",
+			['alpha=', 'lambda=', 'iterations=', 'threshold='])
+	except getopt.GetoptError as err:
+		print(err)
+		usage()
+		sys.exit()
+
+	#argumentos vazios
+	if len(opts)==0:
+		usage()
+		sys.exit()
+
+	for opt, arg in opts:
+		if opt in ('-a', '--alpha') and is_positive_number(arg):
+			alpha= float(arg)
+		elif opt in ('-l', '--lambda') and is_positive_number(arg):
+			Lambda = float(arg)
+		elif opt in ('-i','--iterations') and is_positive_number(arg):
+			iterations = int(arg)
+		elif opt in ('-t','--threshold') and is_positive_number(arg):
+			threshold = float(arg)
+		else:
+			usage()
+			sys.exit()
+
+	'''
+	print('alpha : {}'.format(alpha))
+	print('lambda : {}'.format(Lambda))
+	print('iterations : {}'.format(iterations))
+	'''
+	return alpha,Lambda,iterations,threshold
+
+alpha, Lambda, iterations,threshold = get_parameters()
+
 
 #Reads data
 #data_matrix = pd.read_csv(path_2_csv_ic)

@@ -5,6 +5,7 @@ import time
 import normal_equations
 import getopt
 import warnings
+import sys
 
 warnings.filterwarnings("ignore")
 
@@ -12,6 +13,64 @@ path_2_csv_ic ="/home/ec2010/ra082674/mo444/assign2/1/train.csv"
 train_csv = "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/train.csv"
 test_csv = "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test.csv"
 test_target =  "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test_target.csv"
+
+#################################
+#Usage:
+#arguments
+# -a = --alpha = alpha
+# -l = --lambda = lambda
+# -i = --iterations =  number of iterations
+# -t = --threshold = threshold value of instances whose shares are above it are not considered for the training 
+################################
+def usage():
+	print("---------------Usage--------------------")
+	print("Pass the arguments -a -l -i -t\n(ou --alpha --lambda --iterations --threshold) followed by their respective POSITIVE NUMERIC value")
+
+def is_positive_number(x):
+	try:
+		float(x)
+	except ValueError:
+		return False
+	if float(x)>=0:
+		return True
+	else:
+		return False
+
+def get_parameters():	
+	try:
+		opts, args = getopt.getopt(sys.argv[1:],"a:l:i:t:",
+			['alpha=', 'lambda=', 'iterations=', 'threshold='])
+	except getopt.GetoptError as err:
+		print(err)
+		usage()
+		sys.exit()
+
+	#argumentos vazios
+	if len(opts)==0:
+		usage()
+		sys.exit()
+
+	for opt, arg in opts:
+		if opt in ('-a', '--alpha') and is_positive_number(arg):
+			alpha= float(arg)
+		elif opt in ('-l', '--lambda') and is_positive_number(arg):
+			Lambda = float(arg)
+		elif opt in ('-i','--iterations') and is_positive_number(arg):
+			iterations = int(arg)
+		elif opt in ('-t','--threshold') and is_positive_number(arg):
+			threshold = float(arg)
+		else:
+			usage()
+			sys.exit()
+
+	'''
+	print('alpha : {}'.format(alpha))
+	print('lambda : {}'.format(Lambda))
+	print('iterations : {}'.format(iterations))
+	'''
+	return alpha,Lambda,iterations,threshold
+
+alpha, Lambda, iterations,threshold = get_parameters()
 
 #Reads data
 #data_matrix = pd.read_csv(path_2_csv_ic)
@@ -39,7 +98,6 @@ numpy_data = np.delete(numpy_data, [col_target], axis=1)
 print("Minimum share: {}  -- ----  Maximum share:{}".format(y.min(),y.max()))
 print("Mean share: {}  -- ----  Standard Deviation share:{}".format(np.mean(y),np.std(y)))
 
-
 k, bins, patches = plt.hist(y, bins = 100, range = (-1,y.max()))
 plt.xlabel('Shares bin(target)', fontsize=15)
 plt.ylabel('Number of URLs(instances) per bin', fontsize=15)
@@ -54,7 +112,6 @@ plt.ylabel('Number of URLs(instances) per bin', fontsize=15)
 plt.show()
 
 #Use only representative instances, shares above a threshold value
-threshold = 7000
 outliers_index = np.argwhere(y > threshold)
 outliers_index = np.delete(outliers_index, [1], axis=1)
 m_selected_inst= len(y) - len(outliers_index)
@@ -109,19 +166,16 @@ y_val=y[m_train:]
 ################################################################## 
 #Linear Regression:Cost function computation and Gradient Descent with regularization
 ##################################################################
+'''
 alpha = 0.01
 
 Lambda = 1000
 
 iterations = 1000
+'''
 
 thetas = 0.5*np.ones([n,1]) #initializing theta = 0.5
 
-#m = m_train #y.size
-
-###################################################
-### Adding complexity: theta squared
-##################################################
 thetas_2 = 0.5*np.ones([n*2-1,1]) #initializing theta_2 = 0.5
 
 thetas_3 = 0.5*np.ones([n*3-2,1]) #initializing theta_3 = 0.5
@@ -131,31 +185,11 @@ def compute_cost(numpy_data, y, thetas, m, Lambda):
        
     thetas_squared = thetas ** 2
     hypothesis = numpy_data.dot(thetas)
-    #print(numpy_data.shape)
     sqErrors = (hypothesis - y) ** 2
 
-    J = (1.0 / (2 * m)) * (sqErrors.sum() + Lambda*thetas_squared.sum() - Lambda*thetas_squared[0,0])
-    
-  
-    return J
-
-'''
-def compute_cost_2(numpy_data, y, thetas_2, m, Lambda):
-
-       
-    thetas_squared = thetas_2 ** 2
-    
-    #new numpy_data has each of its 'x_{i}' columns repeated, except column 'x0'	   
-    numpy_data_2 = np.concatenate((numpy_data,numpy_data[:,1:n]) ,axis=1)
-    hypothesis_2 = numpy_data_2.dot(thetas_2)
-    #print(numpy_data.shape)
-    sqErrors = (hypothesis_2 - y) ** 2
-
-    J = (1.0 / (2 * m)) * (sqErrors.sum() + Lambda*thetas_squared.sum() - Lambda*thetas_squared[0,0])
-    
+    J = (1.0 / float(2 * m)) * (sqErrors.sum() + Lambda*thetas_squared.sum() - Lambda*thetas_squared[0,0])
     
     return J
-'''
 
 def gradient_descent(numpy_data, y, thetas, alpha, iterations, m, Lambda, n):
 
@@ -166,9 +200,7 @@ def gradient_descent(numpy_data, y, thetas, alpha, iterations, m, Lambda, n):
     for i in range(iterations):
         hypothesis = numpy_data.dot(thetas)
         errors = hypothesis - y
-        tempthetas = thetas*(1-(alpha*Lambda/m)) - (alpha/m)*(numpy_data.transpose().dot(errors))
-        for j in range(1,n):
-            tempthetas[j,0] = tempthetas[j,0] - ((alpha*Lambda)/m)*thetas[j,0]
+        tempthetas = thetas*(1-(float(alpha*Lambda)/float(m))) - (float(alpha)/float(m))*(numpy_data.transpose().dot(errors))
         thetas = tempthetas
         J_history[i, 0] = compute_cost(numpy_data, y, tempthetas, m, Lambda)
     return thetas, J_history, i
@@ -184,9 +216,8 @@ def gradient_descent_2(numpy_data, y, thetas_2, alpha, iterations, m, Lambda, n)
     for i in range(iterations):
         hypothesis_2 = numpy_data_2.dot(thetas_2)
         errors = hypothesis_2 - y
-        tempthetas = thetas_2*(1-(alpha*Lambda/m)) - (alpha/m)*(numpy_data_2.transpose().dot(errors))
-        for j in range(1,n):
-            tempthetas[j,0] = tempthetas[j,0] - ((alpha*Lambda)/m)*thetas_2[j,0]
+
+        tempthetas = thetas_2*(1-(float(alpha*Lambda)/float(m))) - (float(alpha)/float(m))*(numpy_data_2.transpose().dot(errors))
         thetas_2 = tempthetas
         J_history[i, 0] = compute_cost(numpy_data_2, y, tempthetas, m, Lambda)
     return thetas_2, J_history, i
@@ -195,7 +226,7 @@ def gradient_descent_3(numpy_data, y, thetas_3, alpha, iterations, m, Lambda, n)
 
     J_history = np.zeros([iterations, 1])
     
-    tempthetas = np.zeros([thetas_2.size, 1])
+    tempthetas = np.zeros([thetas_3.size, 1])
     squared_x = np.power(numpy_data[:,1:n],2)
     numpy_data_2 = np.concatenate((numpy_data,squared_x) ,axis=1)
 
@@ -205,9 +236,7 @@ def gradient_descent_3(numpy_data, y, thetas_3, alpha, iterations, m, Lambda, n)
     for i in range(iterations):
         hypothesis_3 = numpy_data_3.dot(thetas_3)
         errors = hypothesis_3 - y
-        tempthetas = thetas_3*(1-(alpha*Lambda/m)) - (alpha/m)*(numpy_data_3.transpose().dot(errors))
-        for j in range(1,n):
-            tempthetas[j,0] = tempthetas[j,0] - ((alpha*Lambda)/m)*thetas_3[j,0]
+        tempthetas = thetas_3*(1-(float(alpha*Lambda)/float(m))) - (float(alpha)/float(m))*(numpy_data_3.transpose().dot(errors))
         thetas_3 = tempthetas
         J_history[i, 0] = compute_cost(numpy_data_3, y, tempthetas, m, Lambda)
     return thetas_3, J_history, i
@@ -215,7 +244,6 @@ def gradient_descent_3(numpy_data, y, thetas_3, alpha, iterations, m, Lambda, n)
 
 #Gets time of processing
 start_time = time.clock()
-
 
 #Run Linear Regression with Gradient descent
 thetas, J_history, i = gradient_descent(train_data, y_train, thetas, alpha, iterations, m, Lambda, n)
