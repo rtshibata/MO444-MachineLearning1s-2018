@@ -56,7 +56,11 @@ def get_parameters():
 		elif opt in ('-l', '--lambda') and is_positive_number(arg):
 			Lambda = float(arg)
 		elif opt in ('-i','--iterations') and is_positive_number(arg):
-			iterations = int(arg)
+			try:
+				iterations = int(arg)
+			except ValueError:
+				print("iteration argument must be an integer!")
+				sys.exit()
 		elif opt in ('-t','--threshold') and is_positive_number(arg):
 			threshold = float(arg)
 		else:
@@ -146,8 +150,9 @@ for i in range(0,n):
 for i in range(0,n):
      interval_features[0,i] = maximum_features[0,i] -  minimum_features[0,i]
  
-list_to_normalize = [1,2,3,4,5,6,7,8,9,10,11,18,19,20,21,22,23,24,25,26,27,28,29,
-                     38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58]
+list_to_normalize = range(1,n)
+#list_to_normalize = [1,2,3,4,5,6,7,8,9,10,11,18,19,20,21,22,23,24,25,26,27,28,29,
+#                     38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58]
                         
 for i in list_to_normalize:
      numpy_data[:,i] = (numpy_data[:,i] - mean_features[0,i])/(interval_features[0,i])
@@ -166,13 +171,6 @@ y_val=y[m_train:]
 ################################################################## 
 #Linear Regression:Cost function computation and Gradient Descent with regularization
 ##################################################################
-'''
-alpha = 0.01
-
-Lambda = 1000
-
-iterations = 1000
-'''
 
 thetas = 0.5*np.ones([n,1]) #initializing theta = 0.5
 
