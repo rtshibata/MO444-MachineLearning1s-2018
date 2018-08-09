@@ -9,10 +9,11 @@ import sys
 
 warnings.filterwarnings("ignore")
 
-path_2_csv_ic ="/home/ec2010/ra082674/mo444/assign2/1/train.csv"
-train_csv = "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/train.csv"
-test_csv = "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test.csv"
-test_target =  "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test_target.csv"
+initial_path="/home/ec2010/ra082674/Github" #"~/Renato/Github"
+
+train_csv = initial_path+ "/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/train.csv"
+test_csv = initial_path+"/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test.csv"
+test_target = initial_path+ "/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test_target.csv"
 
 #################################
 #Usage:
@@ -268,7 +269,7 @@ plt.ylabel('Cost Function', fontsize=15)
 
 plt.show()
 
-
+'''
 print("Valores Thetas obtidos:")
 print("thetas para hipotese linear:{}".format(thetas))
 print("-------------------------------")
@@ -276,7 +277,7 @@ print("thetas para hipotese ao quadrado:{}".format(thetas_2))
 print("-------------------------------")
 print("thetas para hipotese cubico:{}".format(thetas_3))
 print("-------------------------------")
-
+'''
 ####################
 #Validation test
 ####################
@@ -300,7 +301,6 @@ val_err = np.absolute(val_err)
 val_err_2 = np.absolute(val_err_2)
 val_err_3 = np.absolute(val_err_3)
 
-#Evaluating MSE
 avg_val_err=  float(val_err.sum())/float(m_val)
 avg_val_err_2=  float(val_err_2.sum())/float(m_val)
 avg_val_err_3=  float(val_err_3.sum())/float(m_val)

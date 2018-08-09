@@ -6,10 +6,11 @@ import normal_equations
 import sys
 import getopt
 
-path_2_csv_ic ="/home/ec2010/ra082674/mo444/assign2/1/train.csv"
-train_csv = "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/train.csv"
-test_csv = "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test.csv"
-test_target =  "~/Renato/Github/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test_target.csv"
+initial_path="/home/ec2010/ra082674/Github" #"~/Renato/Github"
+
+train_csv = initial_path+ "/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/train.csv"
+test_csv = initial_path+"/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test.csv"
+test_target = initial_path+ "/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test_target.csv"
 
 #################################
 #Usage:
@@ -161,21 +162,11 @@ for i in list_to_normalize:
 ################################################################## 
 #Linear Regression:Cost function computation and Gradient Descent with regularization
 ##################################################################
-'''
-alpha = 0.001
-
-Lambda = 1000
-
-iterations = 1000
-'''
 
 thetas = 0.5*np.ones([n,1]) #initializing theta = 0.5
 
 #m = m_train #y.size
 
-###################################################
-### Adding complexity: theta squared
-##################################################
 thetas_2 = 0.5*np.ones([n*2-1,1]) #initializing theta_2 = 0.5
 
 thetas_3 = 0.5*np.ones([n*3-2,1]) #initializing theta_3 = 0.5
@@ -193,23 +184,7 @@ def compute_cost(numpy_data, y, thetas, m, Lambda):
   
     return J
 
-'''
-def compute_cost_2(numpy_data, y, thetas_2, m, Lambda):
 
-       
-    thetas_squared = thetas_2 ** 2
-    
-    #new numpy_data has each of its 'x_{i}' columns repeated, except column 'x0'	   
-    numpy_data_2 = np.concatenate((numpy_data,numpy_data[:,1:n]) ,axis=1)
-    hypothesis_2 = numpy_data_2.dot(thetas_2)
-    #print(numpy_data.shape)
-    sqErrors = (hypothesis_2 - y) ** 2
-
-    J = (1.0 / (2 * m)) * (sqErrors.sum() + Lambda*thetas_squared.sum() - Lambda*thetas_squared[0,0])
-    
-    
-    return J
-'''
 
 def gradient_descent(numpy_data, y, thetas, alpha, iterations, m, Lambda, n):
 
@@ -296,6 +271,7 @@ plt.ylabel('Cost Function', fontsize=15)
 
 plt.show()
 
+'''
 print("Valores Thetas obtidos:")
 print("thetas para hipotese linear:{}".format(thetas))
 print("-------------------------------")
@@ -303,6 +279,7 @@ print("thetas para hipotese ao quadrado:{}".format(thetas_2))
 print("-------------------------------")
 print("thetas para hipotese cubico:{}".format(thetas_3))
 print("-------------------------------")
+'''
 
 #Reading the test set and the target values for the test set
 test_matrix = pd.read_csv(test_csv)
