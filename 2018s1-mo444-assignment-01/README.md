@@ -12,9 +12,9 @@ In this specific work all the expected behavior was achieved, despite the fact t
 
 **Algorithm**
 Batch gradient descent(using simultaneous update on thetas) with 3 Linear Regression Models:
--linear features (hypothesis = sum(theta.x)),
--linear + squared features(hypothesis = sum(theta.x + theta.x^2)),
--linear + squared + cubic features(hypothesis = sum(theta.x + theta.x^2 + theta.x^3)),
+* linear features (hypothesis = sum(theta.x)),
+* linear + squared features(hypothesis = sum(theta.x + theta.x^2)),
+* linear + squared + cubic features(hypothesis = sum(theta.x + theta.x^2 + theta.x^3)),
 
 
 **Parameters**
