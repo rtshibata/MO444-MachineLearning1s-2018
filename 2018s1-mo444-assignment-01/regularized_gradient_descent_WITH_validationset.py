@@ -152,8 +152,6 @@ for i in range(0,n):
      interval_features[0,i] = maximum_features[0,i] -  minimum_features[0,i]
  
 list_to_normalize = range(1,n)
-#list_to_normalize = [1,2,3,4,5,6,7,8,9,10,11,18,19,20,21,22,23,24,25,26,27,28,29,
-#                     38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58]
                         
 for i in list_to_normalize:
      numpy_data[:,i] = (numpy_data[:,i] - mean_features[0,i])/(interval_features[0,i])
@@ -199,6 +197,7 @@ def gradient_descent(numpy_data, y, thetas, alpha, iterations, m, Lambda, n):
     for i in range(iterations):
         hypothesis = numpy_data.dot(thetas)
         errors = hypothesis - y
+		#simultaneous assignment of thetas AND theta[0] correctly assigned for x[0]=1 in numpy_data
         tempthetas = thetas*(1-(float(alpha*Lambda)/float(m))) - (float(alpha)/float(m))*(numpy_data.transpose().dot(errors))
         thetas = tempthetas
         J_history[i, 0] = compute_cost(numpy_data, y, tempthetas, m, Lambda)
@@ -215,7 +214,7 @@ def gradient_descent_2(numpy_data, y, thetas_2, alpha, iterations, m, Lambda, n)
     for i in range(iterations):
         hypothesis_2 = numpy_data_2.dot(thetas_2)
         errors = hypothesis_2 - y
-
+		#simultaneous assignment of thetas AND theta[0] correctly assigned for x[0]=1 in numpy_data
         tempthetas = thetas_2*(1-(float(alpha*Lambda)/float(m))) - (float(alpha)/float(m))*(numpy_data_2.transpose().dot(errors))
         thetas_2 = tempthetas
         J_history[i, 0] = compute_cost(numpy_data_2, y, tempthetas, m, Lambda)
@@ -235,6 +234,7 @@ def gradient_descent_3(numpy_data, y, thetas_3, alpha, iterations, m, Lambda, n)
     for i in range(iterations):
         hypothesis_3 = numpy_data_3.dot(thetas_3)
         errors = hypothesis_3 - y
+		#simultaneous assignment of thetas AND theta[0] correctly assigned for x[0]=1 in numpy_data
         tempthetas = thetas_3*(1-(float(alpha*Lambda)/float(m))) - (float(alpha)/float(m))*(numpy_data_3.transpose().dot(errors))
         thetas_3 = tempthetas
         J_history[i, 0] = compute_cost(numpy_data_3, y, tempthetas, m, Lambda)
