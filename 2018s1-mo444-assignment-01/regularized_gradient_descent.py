@@ -6,7 +6,7 @@ import normal_equations
 import sys
 import getopt
 
-initial_path="/home/ec2010/ra082674/Github" #"~/Renato/Github"
+initial_path="~/Renato/Github"
 
 train_csv = initial_path+ "/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/train.csv"
 test_csv = initial_path+"/MO444-MachineLearning1s-2018/2018s1-mo444-assignment-01/data/test.csv"
@@ -192,8 +192,10 @@ def gradient_descent(numpy_data, y, thetas, alpha, iterations, m, Lambda, n):
     for i in range(iterations):
         hypothesis = numpy_data.dot(thetas)
         errors = hypothesis - y
-		#simultaneous assignment of thetas AND theta[0] correctly assigned for x[0]=1 in numpy_data
+		#simultaneous assignment of thetas AND theta[0] not included for regularization
         tempthetas = thetas*(1-(float(alpha*Lambda)/float(m))) - (float(alpha)/float(m))*(numpy_data.transpose().dot(errors))
+        tempthetas[0] = thetas[0] - (float(alpha)/float(m))* (numpy_data[:,0].transpose().dot(errors))        
+        
         thetas = tempthetas
         J_history[i, 0] = compute_cost(numpy_data, y, tempthetas, m, Lambda)
     return thetas, J_history, i
@@ -209,8 +211,10 @@ def gradient_descent_2(numpy_data, y, thetas_2, alpha, iterations, m, Lambda, n)
     for i in range(iterations):
         hypothesis_2 = numpy_data_2.dot(thetas_2)
         errors = hypothesis_2 - y
-		#simultaneous assignment of thetas AND theta[0] correctly assigned for x[0]=1 in numpy_data
+		#simultaneous assignment of thetas AND theta[0] not included for regularization
         tempthetas = thetas_2*(1-(float(alpha*Lambda)/float(m))) - (float(alpha)/float(m))*(numpy_data_2.transpose().dot(errors))
+        tempthetas[0] = thetas_2[0] - (float(alpha)/float(m))* (numpy_data_2[:,0].transpose().dot(errors))        
+        
         thetas_2 = tempthetas
         J_history[i, 0] = compute_cost(numpy_data_2, y, tempthetas, m, Lambda)
     return thetas_2, J_history, i
@@ -229,8 +233,10 @@ def gradient_descent_3(numpy_data, y, thetas_3, alpha, iterations, m, Lambda, n)
     for i in range(iterations):
         hypothesis_3 = numpy_data_3.dot(thetas_3)
         errors = hypothesis_3 - y
-		#simultaneous assignment of thetas AND theta[0] correctly assigned for x[0]=1 in numpy_data
+		#simultaneous assignment of thetas AND theta[0] not included for regularization
         tempthetas = thetas_3*(1-(float(alpha*Lambda)/float(m))) - (float(alpha)/float(m))*(numpy_data_3.transpose().dot(errors))
+        tempthetas[0] = thetas_3[0] - (float(alpha)/float(m))* (numpy_data_3[:,0].transpose().dot(errors))        
+        
         thetas_3 = tempthetas
         J_history[i, 0] = compute_cost(numpy_data_3, y, tempthetas, m, Lambda)
     return thetas_3, J_history, i
